@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pqcom_setup.ui'
+# Form implementation generated from reading ui file 'pqcom/pqcom/setup.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # Use customized ComboBox for port selection
 # Changed by Yihui Xiong
@@ -68,6 +68,9 @@ class Ui_Dialog(object):
         self.label_4 = QtWidgets.QLabel(Dialog)
         self.label_4.setObjectName("label_4")
         self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_4)
+        self.checkBox = QtWidgets.QCheckBox(Dialog)
+        self.checkBox.setObjectName("checkBox")
+        self.formLayout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.checkBox)
         self.verticalLayout.addLayout(self.formLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -103,4 +106,6 @@ class Ui_Dialog(object):
         self.parityComboBox.setItemText(3, _translate("Dialog", "Mark"))
         self.parityComboBox.setItemText(4, _translate("Dialog", "Space"))
         self.label_4.setText(_translate("Dialog", "Parity"))
+        self.checkBox.setToolTip(_translate("Dialog", "Try to reopen port after disconnect"))
+        self.checkBox.setText(_translate("Dialog", "Reopen"))
 

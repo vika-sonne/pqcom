@@ -104,6 +104,10 @@ class SetupDialog(QDialog, setup_ui.Ui_Dialog):
         parity = str(self.parityComboBox.currentText())
 
         return port, baud, bytebits, stopbits, parity
+    
+    @property
+    def reconnect(self):
+        return self.checkBox.isChecked()
 
 
 class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
@@ -113,6 +117,8 @@ class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+
+        self._reconnect_timer_id = -1
 
         self.collections = []
         try:
@@ -131,8 +137,6 @@ class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.aboutDialog = AboutDialog(self)
 
         self.setupDialog = SetupDialog(self)
-        port, baud, bytebits, stopbits, parity = self.setupDialog.get()
-        self.setWindowTitle('pqcom - ' + port + ' ' + str(baud))
 
         self.actionNew.setIcon(QIcon(resource_path('img/new.svg')))
         self.actionSetup.setIcon(QIcon(resource_path('img/settings.svg')))
@@ -228,6 +232,16 @@ class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
         # self.extendRadioButton.setVisible(False)
         self.periodSpinBox.setVisible(False)
+
+        self._show_port_status()
+
+    def _show_port_status(self):
+        port, baud, bytebits, stopbits, parity = self.setupDialog.get()
+        title = 'pqcom - {}@{} {}{}{}'.format(port, baud, bytebits, parity[0], stopbits)
+        if serial:
+            self.setWindowTitle(title + (' opened' if serial.is_open else ' closed'))
+        else:
+            self.setWindowTitle(title)
 
     def new(self):
         save = open(PQCOM_DATA_FILE, 'wb')
@@ -393,7 +407,11 @@ class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
     def handle_serial_error(self):
         self.actionRun.setChecked(False)
-        self.setup(True)
+        if self.setupDialog.reconnect:
+            if self._reconnect_timer_id < 0:
+                self._reconnect_timer_id = self.startTimer(500)
+        else:
+            self.setup(True)
 
     def on_data_received(self):
         self.data_received.emit()
@@ -406,16 +424,15 @@ class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.actionRun.setChecked(True)
 
     def run(self, is_true):
-        port, baud, bytebits, stopbits, parity = self.setupDialog.get()
         if is_true:
+            port, baud, bytebits, stopbits, parity = self.setupDialog.get()
             serial.start(port, baud, bytebits, stopbits, parity)
-            self.setWindowTitle('pqcom - ' + port + ' ' + str(baud) + ' opened')
         else:
             if self.sendButton.text().find('Stop') >= 0:
                 self.repeater.stop()
                 self.sendButton.setText('Start')
             serial.join()
-            self.setWindowTitle('pqcom - ' + port + ' ' + str(baud) + ' closed')
+        self._show_port_status()
 
     def display(self):
         data = serial.read()
@@ -456,6 +473,26 @@ class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
         save.close()
 
         event.accept()
+
+    def timerEvent(self, event):
+        # print('Reconnect timer. is Run: ' + str(self.actionRun.isChecked()))
+        if self._reconnect_timer_id >= 0:
+            self.killTimer(self._reconnect_timer_id)
+            self._reconnect_timer_id = -1
+        if not self.actionRun.isChecked():
+            self.actionRun.setChecked(True)
+        self._show_port_status()
+        # end_s = self.windowTitle()[-1]
+        # if end_s == '/':
+        #     self.setWindowTitle(self.windowTitle()[:-1] + '-')
+        # elif end_s == '-':
+        #     self.setWindowTitle(self.windowTitle()[:-1] + '\\')
+        # elif end_s == '\\':
+        #     self.setWindowTitle(self.windowTitle()[:-1] + '|')
+        # elif end_s == '|':
+        #     self.setWindowTitle(self.windowTitle()[:-1] + '/')
+        # else:
+        #     self.setWindowTitle(self.windowTitle() + ' /')
 
 
 class Repeater(object):
