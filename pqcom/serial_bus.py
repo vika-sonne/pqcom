@@ -210,8 +210,8 @@ class SerialBus(object):
 				data = self.serial.read(1024)
 
 				if data and len(data) > 0:
-					data = data.decode('utf-8', 'replace')
-					logging.info('rx:' + data)
+					data = data
+					# logging.info('rx:' + data)
 					self.rx_queue.put(data)
 					if self.notify:
 						self.notify()

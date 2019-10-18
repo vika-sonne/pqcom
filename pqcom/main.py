@@ -10,6 +10,8 @@ import threading
 from time import sleep
 import pickle
 import argparse
+import codecs
+from datetime import datetime
 
 from PyQt5.QtGui import QIcon, QKeySequence, QTextCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QAction, QActionGroup, QMenu, QShortcut
@@ -97,7 +99,6 @@ class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
 		self.sendButton.setMenu(popupMenu)
 
 		# history
-		self.input_history = ''
 		self.output_history = []
 		self.repeater = Repeater()
 		self.outputHistoryActions = []
@@ -381,25 +382,20 @@ class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
 	def display(self):
 		self.is_last_error = False
-		data = serial.read()
-		self.input_history += data  # store history data
+		buff = serial.read()
+		prefix = datetime.now().strftime('%H:%M:%S.%f')+' {:02} << '.format(len(buff))
 
 		if self.actionHex.isChecked():
-			data = translator.to_hex_prefix_string(data)
+			buff = str(codecs.encode(buff, 'hex'))[2:-1]
+		else:
+			buff = str(buff.decode('latin').encode('ascii', 'backslashreplace'))[2:-1]
 
 		self.oRecievedData.moveCursor(QTextCursor.End)
-		self.oRecievedData.insertPlainText(data)
+		self.oRecievedData.insertPlainText(prefix + buff + '\n')
 		self.oRecievedData.moveCursor(QTextCursor.End)
 
 	def convert(self, is_true):
-		if is_true:
-			text = translator.to_hex_prefix_string(self.input_history)
-		else:
-			text = self.input_history
-
-		self.oRecievedData.clear()
-		self.oRecievedData.insertPlainText(text)
-		self.oRecievedData.moveCursor(QTextCursor.End)
+		pass
 
 	def pin(self, is_true):
 		if is_true:
@@ -411,7 +407,6 @@ class MainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
 	def clear(self):
 		self.oRecievedData.clear()
-		self.input_history = ''
 
 	def show_send(self, is_true):
 		'Shows/hides send pane'
@@ -488,6 +483,7 @@ def main():
 		# parser.add_argument('-v', action='count', default=0, help='verbose level: -v, -vv or -vvv (bytes); default: -v')
 		parser.add_argument('-r', action='store_true', help='reconnect to serial port')
 		parser.add_argument('-s', action='store_true', help='start and hide setup dialog')
+		parser.add_argument('-x', action='store_true', help='switch to HEX view')
 		# parser.add_argument('--bytes', action='store_true', help='receive byte by byte')
 		# parser.add_argument('--reconnect-delay', metavar='SEC', type=float, default=DEFAULT_COM_RECONNECT_DELAY,
 		# 	help='reconnect delay, s; default: '+str(DEFAULT_COM_RECONNECT_DELAY))
@@ -505,6 +501,10 @@ def main():
 	serial = serial_bus.SerialBus(window.on_data_received, window.on_serial_failed)
 
 	window.show()
+
+	if args.x:
+		window.actionHex.setChecked(True)
+
 	if args.r:
 		window.run(True)
 	else:
