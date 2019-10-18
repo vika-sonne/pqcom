@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>236</width>
-    <height>218</height>
+    <width>357</width>
+    <height>310</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>pqcom</string>
+   <string>pqcom port setup</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -19,29 +19,15 @@
      <property name="fieldGrowthPolicy">
       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
      </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Port Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="portComboBox">
-       <property name="editable">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Baud Rate</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="baudComboBox">
+     <item row="3" column="1">
+      <widget class="QComboBox" name="oBaud">
        <property name="editable">
         <bool>true</bool>
        </property>
@@ -72,15 +58,39 @@
        </item>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Data Bits</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="oBytebits">
+       <property name="editable">
+        <bool>false</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>8</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>7</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="5" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Stop Bits</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QComboBox" name="stopbitComboBox">
+     <item row="5" column="1">
+      <widget class="QComboBox" name="oStopbits">
        <item>
         <property name="text">
          <string>1</string>
@@ -98,32 +108,15 @@
        </item>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="dataComboBox">
-       <property name="editable">
-        <bool>true</bool>
-       </property>
-       <item>
-        <property name="text">
-         <string>8</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>7</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_5">
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Data Bits</string>
+        <string>Parity</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QComboBox" name="parityComboBox">
+     <item row="6" column="1">
+      <widget class="QComboBox" name="oParity">
        <item>
         <property name="text">
          <string>None</string>
@@ -151,21 +144,78 @@
        </item>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Parity</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QCheckBox" name="checkBox">
+     <item row="7" column="1">
+      <widget class="QCheckBox" name="oReconnect">
        <property name="toolTip">
         <string>Try to reopen port after disconnect</string>
        </property>
        <property name="text">
         <string>Reopen</string>
        </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QFrame" name="frame">
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QFormLayout" name="formLayout_2">
+        <property name="labelAlignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="horizontalSpacing">
+         <number>0</number>
+        </property>
+        <property name="verticalSpacing">
+         <number>5</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="portComboBox">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QRadioButton" name="oRadioName">
+          <property name="text">
+           <string>Port Na&amp;me</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QRadioButton" name="oRadioVIDPID">
+          <property name="toolTip">
+           <string>List of HEX: VID:PID[, VID:PID...]. Example: 03eb:6124,03eb:2124</string>
+          </property>
+          <property name="text">
+           <string>USB &amp;VID:PID</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="oVidpid">
+          <property name="text">
+           <string>03eb:6124,03eb:2404</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
