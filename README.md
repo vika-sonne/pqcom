@@ -1,12 +1,26 @@
 ![pqcom](pqcom/img/pqcom-logo-expanded.png)
 ===========================================
 
-A simple serial port tool for Linux/Windows/Mac. It's written by Python and Qt (PyQt5).
+**A simple serial port tool for Linux/Windows/Mac.**
+It's written by Python 3 and Qt (PyQt5).
+
+## Fork changes
+
+### Com port reopen
 
 This fork includes `Reopen` checkbox to automatic reopen a missing serial port when it come back in the system.
+
+### USB UID::PID autoconnect filter
+
 And `USB VID:PID` filter to connect a port.
 
-![pqcom](preview/pqcom-setup.png)
+### Examples of reopen and USB autoconnect filter
+
+![pqcom com port setup](preview/pqcom-setup.png)
+
+![pqcom with com port opened](preview/pqcom-reconnect.png)
+
+### Comman-line interface
 
 Fork also includes command-line interface:
 
@@ -30,16 +44,34 @@ optional arguments:
   --vid-pid VID:PID     search for USB: VendorID:ProductID[,VendorID:ProductID[...]]; example: 03eb:2404,03eb:6124
 ```
 
+## Examples
+
 Usage example of USB temperature & hudminity sensor:
 
 ```sh
 python main.py --vid-pid 1a86:7523 -rsb 2400
 ```
 
-![pqcom](preview/pqcom-opened.png)
+![pqcom with com port opened](preview/pqcom-opened.png)
 
-## Requirements
+## Python 3 packets requirements
 
--	python
+-	argparse
 -	pyserial
 -	pyqt5
+
+To install python packages can be used pip3. PyQt5 can be installed by [Anaconda](https://docs.continuum.io/anaconda/pkg-docs).
+
+### Windows
+
+```sh
+pip3 install argparse pyserial pyqt5
+```
+
+## Linux
+
+```sh
+pip3 install argparse pyserial
+```
+
+On Linux based systems should be used packet manager instead of python pip for PyQt5 installation.
